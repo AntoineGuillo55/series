@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Series{% endblock %}</title>
-        {% block stylesheets %}
-        {% endblock %}
-
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Series{% endblock %}</title>
+    <link rel="icon" href="{{ asset('img/icon.png') }}">
+    {% block javascripts %}
+        {% block importmap %}{{ importmap('app') }}{% endblock %}
+    {% endblock %}
+</head>
+<body>
+<div class="container">
     <header>
+        <img src="{{ asset('img/logo.svg') }}" alt="Series">
         {% include 'menu/nav.html.twig' %}
 
     </header>
@@ -21,5 +21,6 @@
     <footer>
         {% include 'menu/nav.html.twig' %}
     </footer>
-    </body>
+</div>
+</body>
 </html>

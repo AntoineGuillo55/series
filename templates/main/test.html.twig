@@ -9,6 +9,39 @@
 </head>
 <body>
 <h1>Welcome to the jungle Test !</h1>
+
+{# Création d'une variable #}
+{% set name = "Booby" %}
+<h2>Hello {{ name }}</h2>
+
+{# création d'un tableau #}
+{%  set colors = ['red', 'pink', 'blue'] %}
+{% for color in colors %}
+    {% if loop.first and color == "red" %}
+        <div>Première couleur</div>
+    {% endif %}
+    <div style="background-color: {{ color }}">{{ color }}</div>
+{% endfor %}
+
+{% set serie = {
+    name : 'Arcane',
+    year : 2024,
+    director : 'Riot games'
+} %}
+
+<h3>{{ serie.name }}</h3>
+
+{% for key, val in serie %}
+    <div>{{ key }} : {{ val }}</div>
+{% endfor %}
+
+{% for i in 1..10 %}
+<span>{{ i }}</span>
+{% endfor %}
+
+{% embed 'test/embed.html.twig' with {"name" : name} %}
+
+{% endembed %}
 </body>
 </html>
 

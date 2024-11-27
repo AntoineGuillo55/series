@@ -4,7 +4,7 @@ body {
     background-position: center center;
     background-size: cover;
     color: #EEE;
-    font-family: 'Roboto', serif;
+    font-family: 'Parkisans', sans-serif;
 }
 
 .flex_div{
@@ -156,4 +156,14 @@ textarea{
 
 .seasons{
     margin-top: 15px;
+}
+
+.series-list {
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
+
+.serie-details {
+    display: flex;
 }

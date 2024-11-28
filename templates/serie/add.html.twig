@@ -1,7 +1,13 @@
 {% extends 'base.html.twig' %}
 
+{%  form_theme serieForm 'views/form-theme.html.twig' %}
+
 {% block body %}
 <h1>Add a TV show !</h1>
+    {{ form_start(serieForm) }}
+    {{ form_widget(serieForm) }}
+    <button>Create a Serie !</button>
+    {{ form_end(serieForm) }}
 {% endblock %}
 
 {% block title %}

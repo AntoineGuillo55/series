@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Serie;
+use App\Form\SerieType;
 use App\Repository\SerieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -38,27 +40,28 @@ class SerieController extends AbstractController
     }
 
     #[Route('/add', name: 'serie_add', methods: ['GET', 'POST'],)]
-    public function add(EntityManagerInterface $entityManager): Response
+    public function add(Request $request, EntityManagerInterface $entityManager): Response
     {
 
-        $serie = new Serie();
-        $serie->setBackdrop("backdrop.png")
-            ->setDateCreated(new \DateTime())
-            ->setName("The gentlemen")
-            ->setGenres("Gangsters")
-            ->setVote(8)
-            ->setFirstAirDate(new \DateTime('-1 year'))
-            ->setOverview("Drogue, baston, riches, sexe")
-            ->setPopularity(450)
-            ->setPoster('poster.png')
-            ->setStatus("returning")
-            ->setTmdbId(1238431654);
+       $serie = new Serie();
 
-        $entityManager->persist($serie);
-        $entityManager->flush();
+       $serieForm = $this->createForm(SerieType::class, $serie);
 
+       $serieForm->handleRequest($request);
 
-        return $this->render('serie/add.html.twig');
+       if($serieForm->isSubmitted() && $serieForm->isValid()) {
+
+//           $serie->setDateCreated(new \DateTime());
+           $entityManager->persist($serie);
+           $entityManager->flush();
+
+           $this->addFlash('success', 'The TV show ' . $serie->getName() . ' has been created');
+           return $this->redirectToRoute('serie_detail', ['id' => $serie->getId()]);
+       }
+
+        return $this->render('serie/add.html.twig', [
+            'serieForm' => $serieForm,
+        ]);
     }
 
     #[Route('/details/{id}', name: 'serie_detail', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]

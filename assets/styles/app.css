@@ -7,6 +7,10 @@ body {
     font-family: 'Parkisans', sans-serif;
 }
 
+.error {
+    color: red;
+}
+
 .flex_div{
     display: flex;
     flex-direction: row;

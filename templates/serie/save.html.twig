@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% form_theme serieForm 'views/form-theme.html.twig' %}
+
+{% block title %}
+    {{ parent() }} | Add a TV Show
+{% endblock %}
+
+{% block body %}
+    <h1>
+        {% if serieId %}
+            Update
+        {% else %}
+            Add
+        {% endif %}
+        a TV Show !</h1>
+
+    {{ form_start(serieForm) }}
+    {{ form_widget(serieForm) }}
+    <button>
+        {% if serieId %}
+            Update
+        {% else %}
+            Add
+        {% endif %}
+        a Serie !
+    </button>
+    {{ form_end(serieForm) }}
+{% endblock %}

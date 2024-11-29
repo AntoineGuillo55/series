@@ -7,6 +7,7 @@ use App\Form\SerieType;
 use App\Repository\SerieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -39,29 +40,54 @@ class SerieController extends AbstractController
         ]);
     }
 
-    #[Route('/add', name: 'serie_add', methods: ['GET', 'POST'],)]
-    public function add(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/add', name: 'serie_add', methods: ['GET', 'POST'])]
+    #[Route('/edit/{id}', name: 'serie_edit', methods: ['GET', 'POST'])]
+    public function save(
+        Request                $request,
+        EntityManagerInterface $entityManager,
+        SerieRepository        $serieRepository,
+        int                    $id = null
+    ): Response
     {
+        $serie = !$id ? new Serie() : $serieRepository->find($id);
 
-       $serie = new Serie();
+        if (!$serie) {
+            throw $this->createNotFoundException('No such serie !');
+        }
 
-       $serieForm = $this->createForm(SerieType::class, $serie);
+        $serieForm = $this->createForm(SerieType::class, $serie);
 
-       $serieForm->handleRequest($request);
+        $serieForm->get('genres')->setData(explode(' / ', $serie->getGenres()));
+        $serieForm->handleRequest($request);
 
-       if($serieForm->isSubmitted() && $serieForm->isValid()) {
+        if ($serieForm->isSubmitted() && $serieForm->isValid()) {
 
-//           $serie->setDateCreated(new \DateTime());
-           $entityManager->persist($serie);
-           $entityManager->flush();
+            $backdrop = $serieForm->get('backdrop')->getData();
 
-           $this->addFlash('success', 'The TV show ' . $serie->getName() . ' has been created');
-           return $this->redirectToRoute('serie_detail', ['id' => $serie->getId()]);
-       }
+            if($backdrop) {
+                /**
+                 * @var UploadedFile $backdrop
+                 */
+                $fileName = $serie->getName() . '-' .uniqid() . '.' . $backdrop->guessExtension();
+                $backdrop->move("../assets/img/backdrops", $fileName);
 
-        return $this->render('serie/add.html.twig', [
+                $serie->setBackdrop($fileName);
+            }
+
+            $serie->setGenres(implode(' / ',$serieForm->get('genres')->getData()));
+            $entityManager->persist($serie);
+            $entityManager->flush();
+
+            $this->addFlash('success', "The Tv Show " . $serie->getName() . " has been updated");
+            return $this->redirectToRoute('serie_detail', ['id' => $serie->getId()]);
+        }
+
+        //TODO renvoyer un formulaire d'ajout de série
+        return $this->render('serie/save.html.twig', [
             'serieForm' => $serieForm,
+            'serieId' => $id
         ]);
+
     }
 
     #[Route('/details/{id}', name: 'serie_detail', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]

@@ -12,10 +12,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/series')]
+#[Route('/series', name: 'serie_')]
 class SerieController extends AbstractController
 {
-    #[Route('/{page}', name: 'serie_list', requirements: ['page' => '\d+'], methods: ['GET'])]
+    #[Route('/{page}', name: 'list', requirements: ['page' => '\d+'], methods: ['GET'])]
     public function list(SerieRepository $serieRepository, int $page = 1): Response
     {
 
@@ -40,7 +40,7 @@ class SerieController extends AbstractController
         ]);
     }
 
-    #[Route('/add', name: 'serie_add', methods: ['GET', 'POST'])]
+    #[Route('/add', name: 'add', methods: ['GET', 'POST'])]
     #[Route('/edit/{id}', name: 'serie_edit', methods: ['GET', 'POST'])]
     public function save(
         Request                $request,
@@ -82,7 +82,6 @@ class SerieController extends AbstractController
             return $this->redirectToRoute('serie_detail', ['id' => $serie->getId()]);
         }
 
-        //TODO renvoyer un formulaire d'ajout de série
         return $this->render('serie/save.html.twig', [
             'serieForm' => $serieForm,
             'serieId' => $id
@@ -90,7 +89,7 @@ class SerieController extends AbstractController
 
     }
 
-    #[Route('/details/{id}', name: 'serie_detail', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    #[Route('/details/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function detail(Serie $serie, SerieRepository $serieRepository): Response
     {
 
@@ -103,5 +102,16 @@ class SerieController extends AbstractController
         return $this->render('serie/detail.html.twig', [
             "serie" => $serie,
         ]);
+    }
+
+    #[Route('/delete/{id}', name: 'delete', requirements: ['id' => '\d+'])]
+    public function delete(Serie $serie, EntityManagerInterface $entityManager): Response
+    {
+        $entityManager->remove($serie);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Serie has been removed !');
+
+        return $this->redirectToRoute('serie_list');
     }
 }

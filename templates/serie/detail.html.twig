@@ -11,22 +11,54 @@
             <div>
                 <img src="{{ asset('img/posters/series/' ~ serie.poster) }}" alt="{{ serie.name }}">
             </div>
-            <div >
+            <div>
                 <div>{{ serie.name }}</div>
                 <div>{{ serie.genres }}</div>
                 <div>Users rating : {{ serie.vote }}</div>
                 <div>Serie status : {{ serie.status }}</div>
-                <div>Aired from {{ serie.firstAirDate | date("Y-m-d")}} to {{ serie.lastAirDate | date("Y-m-d") }}</div>
+                <div>Aired from {{ serie.firstAirDate | date("Y-m-d") }}
+                    to {{ serie.lastAirDate | date("Y-m-d") }}</div>
                 <div>{{ serie.overview | nl2br }}</div>
+                <div>
+                    <a href="{{ path('season_add', {'serieId': serie.id}) }}">
+                        <button>Add a season</button>
+                    </a>
+                    <a href="{{ path('serie_delete', {'id': serie.id}) }}">
+                        <button>Delete serie</button>
+                    </a>
+                </div>
             </div>
         </article>
+
+        <div class="seasons">
+            {% for season in serie.seasons %}
+                <article>
+                    <div><img src="{{ asset('img/posters/seasons/' ~ season.poster) }}" alt="{{ season.serie.name }}">
+                    </div>
+                    <div>
+                        <div># {{ season.number }}</div>
+                        <div>Aired From {{ season.firstAirDate | date('Y-m-d') }}</div>
+                        <div>{{ season.overview | nl2br }}</div>                    <div>
+                            <a href="{{ path('season_edit', {'id': season.id}) }}">
+                                <button>Update season</button>
+                            </a>
+                            <a href="{{ path('season_delete', {'id': season.id}) }}">
+                                <button>Delete season</button>
+                            </a>
+                        </div>
+
+                    </div>
+
+                </article>
+            {% endfor %}
+        </div>
     </section>
 {% endblock %}
 
 {% block extraStyle %}
     <style>
         body {
-            background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0)), url("{{ asset('img/backdrops/' ~ serie.backdrop) }}");
+            background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)), url("{{ asset('img/backdrops/' ~ serie.backdrop) }}");
         }
     </style>
 {% endblock %}

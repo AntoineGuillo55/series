@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Serie;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -44,6 +45,8 @@ class SerieRepository extends ServiceEntityRepository
     public function findAllWithPagination(int $page, int $limit = 50) {
 
         $qb = $this->createQueryBuilder('s');
+        $qb->leftJoin('s.seasons', 'seasons');
+        $qb->addSelect('seasons');
         $qb->addOrderBy('s.popularity', 'DESC');
 
         $offset = ($page -1) * $limit;
@@ -51,6 +54,8 @@ class SerieRepository extends ServiceEntityRepository
         $qb->setMaxResults($limit)
             ->setFirstResult($offset);
 
-        return $qb->getQuery()->getResult();
+        $paginator = new Paginator($qb->getQuery());
+
+        return $paginator;
     }
 }

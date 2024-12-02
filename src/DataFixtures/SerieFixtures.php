@@ -7,7 +7,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 
-class AppFixtures extends Fixture
+class SerieFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
@@ -28,6 +28,8 @@ class AppFixtures extends Fixture
                 ->setPoster('poster.png')
                 ->setStatus($faker->randomElement(["returning", "ended", "canceled"]))
                 ->setTmdbId($faker->randomNumber());
+
+//            $this->addReference("serie-$i", $serie);
 
             $manager->persist($serie);
         }

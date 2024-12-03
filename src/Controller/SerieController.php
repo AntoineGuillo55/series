@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/series', name: 'serie_')]
 class SerieController extends AbstractController
@@ -19,8 +20,6 @@ class SerieController extends AbstractController
     public function list(SerieRepository $serieRepository, int $page = 1): Response
     {
 
-//        $series = $serieRepository->findAll();
-//        $series = $serieRepository->findByGenresAndPopularity("comedy");
         $maxPage = ceil($serieRepository->count([]) / 50);
 
         if($page < 1) {
@@ -42,6 +41,7 @@ class SerieController extends AbstractController
 
     #[Route('/add', name: 'add', methods: ['GET', 'POST'])]
     #[Route('/edit/{id}', name: 'serie_edit', methods: ['GET', 'POST'])]
+    #[IsGranted("ROLE_USER")]
     public function save(
         Request                $request,
         EntityManagerInterface $entityManager,

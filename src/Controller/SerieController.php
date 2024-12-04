@@ -5,9 +5,9 @@ namespace App\Controller;
 use App\Entity\Serie;
 use App\Form\SerieType;
 use App\Repository\SerieRepository;
+use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -46,7 +46,8 @@ class SerieController extends AbstractController
         Request                $request,
         EntityManagerInterface $entityManager,
         SerieRepository        $serieRepository,
-        int                    $id = null
+        FileUploader $fileUploader,
+        int $id = null
     ): Response
     {
         $serie = !$id ? new Serie() : $serieRepository->find($id);
@@ -65,12 +66,8 @@ class SerieController extends AbstractController
             $backdrop = $serieForm->get('backdrop')->getData();
 
             if($backdrop) {
-                /**
-                 * @var UploadedFile $backdrop
-                 */
-                $fileName = $serie->getName() . '-' .uniqid() . '.' . $backdrop->guessExtension();
-                $backdrop->move("../assets/img/backdrops", $fileName);
 
+                $fileName = $fileUploader->upload($backdrop, $this->getParameter('backdrop_path'), $serie->getName());
                 $serie->setBackdrop($fileName);
             }
 

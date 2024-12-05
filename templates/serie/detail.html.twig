@@ -14,7 +14,7 @@
             <div>
                 <div>{{ serie.name }}</div>
                 <div>{{ serie.genres }}</div>
-                <div>Users rating : {{ serie.vote }}</div>
+                <div>Users rating : {{ serie.vote }} / Like : <span id="serieNbLike">{{ serie.nbLike }}</span></div>
                 <div>Serie status : {{ serie.status }}</div>
                 <div>Aired from {{ serie.firstAirDate | date("Y-m-d") }}
                     to {{ serie.lastAirDate | date("Y-m-d") }}</div>
@@ -27,6 +27,8 @@
                         <a href="{{ path('serie_delete', {'id': serie.id}) }}">
                             <button>Delete serie</button>
                         </a>
+                        <button class="btnLike" value="1">Like !</button>
+                        <button class="btnLike" value="-1">Dislike !</button>
                     </div>
                 {% endif %}
             </div>
@@ -49,6 +51,8 @@
                                 <a href="{{ path('season_delete', {'id': season.id}) }}">
                                     <button>Delete season</button>
                                 </a>
+{#                                <button class="btnLike" value="1">Like !</button>#}
+{#                                <button class="btnLike" value="-1">Dislike !</button>#}
                             </div>
                         {% endif %}
                     </div>
@@ -66,3 +70,27 @@
         }
     </style>
 {% endblock %}
+
+{% block extraJs %}
+    <script>
+
+        let buttons = Array.from(document.querySelectorAll('.btnLike'));
+        let url = "{{ path('api_serie_update', {'id': serie.id}) }}";
+
+        let nbLike = parseInt({{ serie.nbLike }})
+
+        buttons.forEach(function(val) {
+
+            val.addEventListener('click', function() {
+                let data = { nbLike : nbLike + parseInt(val.value)};
+                fetch(url, {method: 'PUT', body: JSON.stringify(data)})
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById("serieNbLike").innerText = data.nbLike;
+                        nbLike = parseInt(data.nbLike)
+                    })
+            })
+        })
+    </script>
+{% endblock %}
+
